@@ -1,13 +1,65 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+
 import './App.css';
 
 class App extends Component {
+  state = {
+    hideModal: false,
+    user: '',
+    computer: '',
+    currentPlayer: '',
+    moves: 0,
+    playerWins: 0,
+    computerWins: 0
+  }
+
+  handleX = ()  => {
+    this.setState({
+      hideModal: true,
+      user: 'X',
+      computer: 'O',
+      currentPlayer: 'user'
+    });
+  }
+
+  handleO = () => {
+    this.setState({
+      hideModal: true,
+      user: 'O',
+      computer: 'X',
+      currentPlayer: 'computer'
+    });
+  }
+
+  handleReset = () => {
+    this.setState({
+      hideModal: false,
+      user: '',
+      computer: '',
+      currentPlayer: '',
+      moves: 0
+    });
+  }
+
   render() {
     return (
       <div className='App'>
 
         <div className='Frame'>
+
+          <div className={`Modal Chalkboard gradient ${this.state.hideModal ? 'modal-hidden' : ''}`}>
+            <div className='Heading'>Tic Tac Toe</div>
+            <div className='Game'>
+              <div className='Choice'>
+                <div>Play as:</div>
+                <div className='XO-buttons'>
+                  <button className='XO' onClick={this.handleX}>X</button>
+                  <button className='XO' onClick={this.handleO}>O</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className='Chalkboard gradient'>
             <div className='Heading'>Tic Tac Toe</div>
 
@@ -31,16 +83,19 @@ class App extends Component {
 
             <div className='Row'>
               <div className='Stats'>Player: 0 | Computer: 0</div>
-              <div className='Reset'>Reset</div>
+              <div className='Reset'>
+                <button onClick={this.handleReset}>Reset</button>
+              </div>
             </div>
 
           </div>
         </div>
         <div className='Footer'>
         Designed and coded by &nbsp;<a
-          className='emily-link'
-          href='https://www.freecodecamp.com/whylime23'
-          target='_blank'>Emily Taylor</a>&nbsp; using Atom, React and Chrome dev tools. Background image by Jess Watters at Pexels.
+            className='emily-link'
+            href='https://www.freecodecamp.com/whylime23'
+            target='_blank'
+            rel='noopener noreferrer'>Emily Taylor</a>&nbsp; using Atom, React and Chrome dev tools. Background image by Jess Watters at Pexels.
         </div>
       </div>
     );
