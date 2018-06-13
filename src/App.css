@@ -125,6 +125,11 @@ button:hover {
   text-align: left;
 }
 
+.player-turn, .computer-turn {
+  text-decoration: underline;
+  color: #DAA520;
+}
+
 .Reset {
   width: 110px;
   text-align: right;
@@ -133,6 +138,19 @@ button:hover {
 .Box {
   height: 118px;
   width: 118px;
+  font-size: 5em;
+}
+
+.box-win {
+  background: -moz-radial-gradient(center, ellipse cover, rgba(218,165,32,0) 50%, rgba(218,165,32,0) 56%, rgba(218,165,32,0.8) 60%, rgba(218,165,32,0) 64%); /* FF3.6-15 */
+  background: -webkit-radial-gradient(center, ellipse cover, rgba(218,165,32,0) 50%,rgba(218,165,32,0) 56%,rgba(218,165,32,0.8) 60%,rgba(218,165,32,0) 64%); /* Chrome10-25,Safari5.1-6 */
+  background: radial-gradient(ellipse at center, rgba(218,165,32,0) 50%,rgba(218,165,32,0) 56%,rgba(218,165,32,0.8) 60%,rgba(218,165,32,0) 64%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00daa520', endColorstr='#00daa520',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+
+.Move {
+  height: 117px;
+  width: 117px;
 }
 
 .border-left {
