@@ -42,7 +42,7 @@ body {
   z-index: 1;
 }
 
-.Choice {
+.Choice, .Win-modal {
   height: 350px;
   width: 362px;
   display: flex;
@@ -59,6 +59,16 @@ body {
 
 .XO {
   margin: 10px;
+}
+
+.win-message {
+  margin-top: 0;
+}
+
+.win-buttons {
+  font-size: 0.8em;
+  padding: 5px 10px;
+  margin: 5px;
 }
 
 button {

@@ -87,48 +87,42 @@ class App extends Component {
 
     board[randomNo].clickable = false;
     board[randomNo].value =  this.state.computer;
-    setTimeout(() => {
-      this.setState({
-        currentPlayer: 'user',
-        moves: this.state.moves + 1,
-        board: board,
-      }, this.checkWin);
-    }, 500);
+
+    const { winnerFound, winningCombination } = this.checkWin(board);
+
+    if (winnerFound) {
+      this.triggerWinnerFound(winningCombination);
+    } else {
+      setTimeout(() => {
+        this.setState({
+          currentPlayer: 'user',
+          moves: this.state.moves + 1,
+          board: board,
+        });
+      }, 500);
+    }
   }
 
-  checkWin = () => {
-    let winComboTrue;
+  checkWin = (board) => {
+    let winningCombination;
 
-    const isWinner = winCombos.some((combination) => {
+    const winnerFound = winCombos.some((combination) => {
       let winning = true;
-      const symbol = this.state.board[combination[0]].value;
+      const symbol = board[combination[0]].value;
 
       if (!symbol) {
         return false;
       }
 
       for (var i = 1; i < combination.length; i++) {
-        if (this.state.board[combination[i]].value !== symbol) {
+        if (board[combination[i]].value !== symbol) {
           return false;
         }
       }
-      winComboTrue = combination;
+      winningCombination = combination;
       return true;
     });
-
-    if (isWinner) {
-      const winningModal = () => {
-        this.setState ({
-          hideWinModal: false
-        });
-      }
-
-      this.setState({
-        gameWon: true
-       /* highlight boxes*/
-     }, () => setTimeout(winningModal, 500));
-
-    }
+    return { winnerFound, winningCombination };
   }
 
   createClass = (boxNo) => {
@@ -158,16 +152,67 @@ class App extends Component {
     for (var key in board) {
       board[key].value = '';
       board[key].clickable = true;
+      board[key].win = false;
     }
 
     this.setState({
       hideInitialModal: false,
+      hideWinModal: true,
       user: '',
       computer: '',
       currentPlayer: '',
       moves: 0,
+      gameWon: false,
+      playerWins: 0,
+      computerWins: 0,
       board: board,
     });
+  }
+
+  handleContinue = () => {
+    const { board } = this.state;
+    for (var key in board) {
+      board[key].value = '';
+      board[key].clickable = true;
+      board[key].win = false;
+    }
+
+    this.setState({
+      hideInitialModal: true,
+      hideWinModal: true,
+      currentPlayer: 'user',
+      moves: 0,
+      gameWon: false,
+      board: board,
+    });
+  }
+
+  triggerWinnerFound = (winningCombination) => {
+    const winningModal = () => {
+      if (this.state.currentPlayer === 'user') {
+        this.setState ({
+          playerWins: this.state.playerWins + 1,
+          hideWinModal: false
+        })
+      } else if (this.state.currentPlayer === 'computer') {
+          this.setState ({
+            computerWins: this.state.computerWins + 1,
+            hideWinModal: false
+          });
+      }
+    }
+    // get board from state
+    const { board } = this.state;
+    // loop through winningCombination
+    for (let i = 0; i < winningCombination.length; i++) {
+      // set square to true
+      board[winningCombination[i]].win = true;
+    }
+
+    this.setState({
+      gameWon: true,
+      board: board,
+    }, () => setTimeout(winningModal, 1000));
   }
 
   handleClick = (boxNo) => {
@@ -175,16 +220,16 @@ class App extends Component {
     board[boxNo].clickable = false;
     board[boxNo].value =  this.state.user;
 
-    const checkWinAndStartCompTurn = () => {
-      this.checkWin();
-      this.computerTurn();
+    const { winnerFound, winningCombination } = this.checkWin(board);
+    if (winnerFound) {
+      this.triggerWinnerFound(winningCombination);
+    } else {
+      this.setState({
+        currentPlayer: 'computer',
+        moves: this.state.moves + 1,
+        board: board,
+      }, this.computerTurn);
     }
-
-    this.setState({
-      currentPlayer: 'computer',
-      moves: this.state.moves + 1,
-      board: board,
-    }, checkWinAndStartCompTurn);
   }
 
   render() {
@@ -208,8 +253,10 @@ class App extends Component {
 
           <div className={`Modal Chalkboard gradient ${this.state.hideWinModal ? 'modal-hidden' : ''}`}>
             <div className='Heading'>Tic Tac Toe</div>
-            <div className='Game'>
-              <h1> {this.state.currentPlayer === 'user' ? 'You have won!' : 'The Computer has won!'} </h1>
+            <div className='Game Win-modal'>
+              <p className='win-message'> {this.state.currentPlayer === 'user' ? 'You have won!' : 'The Computer has won!'} </p>
+              <button className='win-buttons' onClick={this.handleContinue}>Continue</button>
+              <button className='win-buttons' onClick={this.handleReset}>Reset</button>
             </div>
           </div>
 
@@ -218,35 +265,35 @@ class App extends Component {
 
             <div className='Game'>
               <div className='Row'>
-                <div className='Box border-right border-bottom'>
+                <div className={`Box border-right border-bottom ${this.createClass(1)}`}>
                   <button className='Move 1' disabled={!this.state.board[1].clickable} onClick={() => this.handleClick('1')}>{this.state.board['1'].value}</button>
                 </div>
-                <div className='Box border-bottom'>
+                <div className={`Box border-bottom ${this.createClass(2)}`}>
                   <button className='Move 2' disabled={!this.state.board[2].clickable} onClick={() => this.handleClick('2')}>{this.state.board['2'].value}</button>
                 </div>
-                <div className='Box border-left border-bottom'>
+                <div className={`Box border-left border-bottom ${this.createClass(3)}`}>
                   <button className='Move 3' disabled={!this.state.board[3].clickable} onClick={() => this.handleClick('3')}>{this.state.board['3'].value}</button>
                 </div>
               </div>
               <div className='Row'>
-                <div className='Box border-right'>
+                <div className={`Box border-right ${this.createClass(4)}`}>
                   <button className='Move 4' disabled={!this.state.board[4].clickable} onClick={() => this.handleClick('4')}>{this.state.board['4'].value}</button>
                 </div>
-                <div className='Box'>
+                <div className={`Box ${this.createClass(5)}`}>
                   <button className='Move 5' disabled={!this.state.board[5].clickable} onClick={() => this.handleClick('5')}>{this.state.board['5'].value}</button>
                 </div>
-                <div className='Box border-left'>
+                <div className={`Box border-left ${this.createClass(6)}`}>
                   <button className='Move 6' disabled={!this.state.board[6].clickable} onClick={() => this.handleClick('6')}>{this.state.board['6'].value}</button>
                 </div>
               </div>
               <div className='Row'>
-                <div className='Box border-right border-top'>
+                <div className={`Box border-right border-top ${this.createClass(7)}`}>
                   <button className='Move 7' disabled={!this.state.board[7].clickable} onClick={() => this.handleClick('7')}>{this.state.board['7'].value}</button>
                 </div>
-                <div className='Box border-top'>
+                <div className={`Box border-top ${this.createClass(8)}`}>
                   <button className='Move 8' disabled={!this.state.board[8].clickable} onClick={() => this.handleClick('8')}>{this.state.board['8'].value}</button>
                 </div>
-                <div className='Box border-left border-top'>
+                <div className={`Box border-left border-top ${this.createClass(9)}`}>
                   <button className='Move 9' disabled={!this.state.board[9].clickable} onClick={() => this.handleClick('9')}>{this.state.board['9'].value}</button>
                 </div>
               </div>
