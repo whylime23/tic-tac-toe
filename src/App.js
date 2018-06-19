@@ -17,6 +17,7 @@ class App extends Component {
   state = {
     hideInitialModal: false,
     hideWinModal: true,
+    hideTieModal: true,
     gameWon: false,
     user: '',
     computer: '',
@@ -92,6 +93,10 @@ class App extends Component {
 
     if (winnerFound) {
       this.triggerWinnerFound(winningCombination);
+    } else if (moves === 8) {
+        this.setState({
+          hideTieModal: false
+        });
     } else {
       setTimeout(() => {
         this.setState({
@@ -158,6 +163,7 @@ class App extends Component {
     this.setState({
       hideInitialModal: false,
       hideWinModal: true,
+      hideTieModal: true,
       user: '',
       computer: '',
       currentPlayer: '',
@@ -180,6 +186,7 @@ class App extends Component {
     this.setState({
       hideInitialModal: true,
       hideWinModal: true,
+      hideTieModal: true,
       currentPlayer: 'user',
       moves: 0,
       gameWon: false,
@@ -216,19 +223,23 @@ class App extends Component {
   }
 
   handleClick = (boxNo) => {
-    const { board } = this.state;
+    const { board, moves } = this.state;
     board[boxNo].clickable = false;
     board[boxNo].value =  this.state.user;
 
     const { winnerFound, winningCombination } = this.checkWin(board);
     if (winnerFound) {
       this.triggerWinnerFound(winningCombination);
+    } else if (moves === 8) {
+        this.setState({
+          hideTieModal: false
+        });
     } else {
-      this.setState({
-        currentPlayer: 'computer',
-        moves: this.state.moves + 1,
-        board: board,
-      }, this.computerTurn);
+        this.setState({
+          currentPlayer: 'computer',
+          moves: this.state.moves + 1,
+          board: board,
+        }, this.computerTurn);
     }
   }
 
@@ -255,6 +266,15 @@ class App extends Component {
             <div className='Heading'>Tic Tac Toe</div>
             <div className='Game Win-modal'>
               <p className='win-message'> {this.state.currentPlayer === 'user' ? 'You have won!' : 'The Computer has won!'} </p>
+              <button className='win-buttons' onClick={this.handleContinue}>Continue</button>
+              <button className='win-buttons' onClick={this.handleReset}>Reset</button>
+            </div>
+          </div>
+
+          <div className={`Modal Chalkboard gradient ${this.state.hideTieModal ? 'modal-hidden' : ''}`}>
+            <div className='Heading'>Tic Tac Toe</div>
+            <div className='Game Win-modal'>
+              <p className='win-message'> It's a tie! </p>
               <button className='win-buttons' onClick={this.handleContinue}>Continue</button>
               <button className='win-buttons' onClick={this.handleReset}>Reset</button>
             </div>
